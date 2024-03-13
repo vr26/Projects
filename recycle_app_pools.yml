@@ -1,0 +1,21 @@
+---
+- name: Recycle App Pools
+  hosts: "{{ servers }}"
+  gather_facts: no
+  serial: "{{ servers | length }}"
+  vars:
+    App_PoolNames: ['27xService', 'AttachmentsService', 'AuthorizationService', 'ClaimAuthorization', 'ClaimService', 'ConfigService', 'MemberService', 'ProviderService', 'ReferenceService', 'WorkflowService', 'AccumulatorService', 'Census', 'Finance', 'CoreRFF','ClaimCounting','AdjudicationService']
+  tasks:
+    - name: Stop App Pools
+      win_webapppool:
+        name: "{{ item }}"
+        state: stopped
+      loop: "{{ App_PoolNames }}"
+      register: output
+    - name: Start App Pools
+      win_webapppool:
+        name: "{{ item }}"
+        state: started
+      loop: "{{ App_PoolNames }}"
+      register: output
+    - debug: var=output.stdout_lines
