@@ -12,6 +12,15 @@
         state: stopped
       loop: "{{ App_PoolNames }}"
       register: output
+    - name: Check if App Pool is stopped
+      win_shell: |
+        Import-Module WebAdministration
+        (Get-WebAppPoolState -Name "{{ item }}").Value
+      loop: "{{ App_PoolNames }}"
+      register: app_pool_state
+      until: app_pool_state.stdout_lines[0] == "Stopped"
+      retries: 5
+      delay: 2
     - name: Start App Pools
       win_webapppool:
         name: "{{ item }}"
