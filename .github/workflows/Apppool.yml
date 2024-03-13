@@ -5,7 +5,7 @@ on:
       servers:
         type: choice
         required: true
-        description: Please choose the servers [Default:All]
+        description: Server Name
         default: All
         options:
           - ServerUAT1
