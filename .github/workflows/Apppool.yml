@@ -1,0 +1,31 @@
+run-name: Recycling App Pools of $ {{ github.event.inputs.servers }}
+on:
+  workflow_dispatch:
+    inputs:
+      servers:
+        type: choice
+        required: true
+        description: Please choose the servers [Default:All]
+        default: All
+        options:
+          - ServerUAT1
+          - ServerUAT2
+          - All
+
+jobs:
+  recycle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install ansible
+
+      - name: Run Ansible playbook
+        run: ansible-playbook recycle_app_pools.yml -e "servers=${{ github.event.inputs.servers }}"
