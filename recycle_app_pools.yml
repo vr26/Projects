@@ -2,9 +2,9 @@
 - name: Recycle App Pools
   hosts: "{{ servers }}"
   gather_facts: no
-  serial: "{{ servers | length }}"
+  serial: 2
   vars:
-    App_PoolNames: ['27xService', 'AttachmentsService', 'AuthorizationService', 'ClaimAuthorization', 'ClaimService', 'ConfigService', 'MemberService', 'ProviderService', 'ReferenceService', 'WorkflowService', 'AccumulatorService', 'Census', 'Finance', 'CoreRFF','ClaimCounting','AdjudicationService']
+    App_PoolNames: ['AppPool1','AppPool2','AppPool3']
   tasks:
     - name: Stop App Pools
       win_webapppool:
