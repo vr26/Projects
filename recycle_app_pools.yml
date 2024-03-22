@@ -1,30 +1,37 @@
 ---
+# Playbook to recycle application pools on specified servers
+
 - name: Recycle App Pools
-  hosts: "{{ servers }}"
-  gather_facts: no
-  serial: 2
+  hosts: "{{ servers }}"  # Specify the target hosts where the application pools will be recycled
+  gather_facts: no  # Disable gathering facts about the target hosts
+  serial: 2  # Number of hosts to run tasks on at a time
+
   vars:
-    App_PoolNames: ['AppPool1','AppPool2','AppPool3']
+    App_PoolNames: ['AppPool1','AppPool2','AppPool3']  
+
   tasks:
-    - name: Stop App Pools
+    - name: Stop App Pools  # Task to stop the application pools
       win_webapppool:
-        name: "{{ item }}"
-        state: stopped
-      loop: "{{ App_PoolNames }}"
-      register: output
-    - name: Check if App Pool is stopped
+        name: "{{ item }}"  
+        state: stopped  
+      loop: "{{ App_PoolNames }}" 
+      register: output 
+
+    - name: Check if App Pool is stopped  # Task to check if the application pool is stopped
       win_shell: |
         Import-Module WebAdministration
-        (Get-WebAppPoolState -Name "{{ item }}").Value
-      loop: "{{ App_PoolNames }}"
-      register: app_pool_state
-      until: app_pool_state.stdout_lines[0] == "Stopped"
-      retries: 5
-      delay: 2
-    - name: Start App Pools
+        (Get-WebAppPoolState -Name "{{ item }}").Value  # Get the state of the application pool
+      loop: "{{ App_PoolNames }}" 
+      register: app_pool_state  
+      until: app_pool_state.stdout_lines[0] == "Stopped"  # Retry the task until the application pool is stopped
+      retries: 5  # Maximum number of retries
+      delay: 2  # Delay between retries
+
+    - name: Start App Pools  # Task to start the application pools
       win_webapppool:
-        name: "{{ item }}"
-        state: started
-      loop: "{{ App_PoolNames }}"
-      register: output
-    - debug: var=output.stdout_lines
+        name: "{{ item }}"  
+        state: started  
+      loop: "{{ App_PoolNames }}"  
+      register: output  
+
+    - debug: var=output.stdout_lines  # Print the output of the task
