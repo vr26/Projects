@@ -7,18 +7,22 @@
     - vars.yml
 
   tasks:
+    - name: Determine App Pools to recycle
+      set_fact:
+        target_app_pools: "{{ app_pools[apppool] if apppool in app_pools else [apppool] }}"
+
     - name: Stop App Pools
       win_webapppool:
         name: "{{ item }}"
         state: stopped
-      loop: "{{ app_pools[apppool] }}"
+      loop: "{{ target_app_pools }}"
       register: output
 
     - name: Check if App Pool is stopped
       win_shell: |
         Import-Module WebAdministration
         (Get-WebAppPoolState -Name "{{ item }}").Value
-      loop: "{{ app_pools[apppool] }}"
+      loop: "{{ target_app_pools }}"
       register: app_pool_state
       until: app_pool_state.stdout_lines[0] == "Stopped"
       retries: 5
@@ -28,16 +32,15 @@
       win_webapppool:
         name: "{{ item }}"
         state: started
-      loop: "{{ app_pools[apppool] }}"
+      loop: "{{ target_app_pools }}"
       register: output
-      
+
     - name: Check current state of App Pools
       win_shell: |
         Import-Module WebAdministration
         (Get-WebAppPoolState -Name "{{ item }}").Value
-      loop: "{{ app_pools[apppool] }}"
+      loop: "{{ target_app_pools }}"
       register: app_pool_state_after_start
 
     - debug: var=output.stdout_lines
     - debug: var=app_pool_state_after_start.stdout_lines
-    
