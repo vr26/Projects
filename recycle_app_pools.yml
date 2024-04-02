@@ -30,5 +30,14 @@
         state: started
       loop: "{{ app_pools[apppool] }}"
       register: output
+      
+    - name: Check current state of App Pools
+      win_shell: |
+        Import-Module WebAdministration
+        (Get-WebAppPoolState -Name "{{ item }}").Value
+      loop: "{{ app_pools[apppool] }}"
+      register: app_pool_state_after_start
 
     - debug: var=output.stdout_lines
+    - debug: var=app_pool_state_after_start.stdout_lines
+    
