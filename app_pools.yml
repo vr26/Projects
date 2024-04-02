@@ -1,0 +1,4 @@
+all:
+  - AppPool1
+  - AppPool2
+  - AppPool3
