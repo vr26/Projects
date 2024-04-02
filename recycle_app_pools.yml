@@ -4,7 +4,7 @@
   gather_facts: no
 
   vars_files:
-    - app_pools.yml
+    - vars.yml
 
   tasks:
     - name: Stop App Pools
