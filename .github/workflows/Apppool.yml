@@ -1,4 +1,4 @@
-run-name: Recycling App Pools of $ {{ github.event.inputs.servers }}
+run-name: Recycling $ {{ github.event.inputs.apppool }} App Pools of $ {{ github.event.inputs.servers }}
 on:
   workflow_dispatch:
     inputs:
@@ -10,7 +10,17 @@ on:
         options:
           - ServerUAT1
           - ServerUAT2
+          - ServerPROD1
+          - ServerPROD2
           - All
+      apppool:
+        type: choice
+        required: true
+        description: Environment Name
+        default: All
+        options:
+          - AppPool1
+          - AppPool2
 
 jobs:
   recycle:
@@ -28,4 +38,4 @@ jobs:
         run: pip install ansible
 
       - name: Run Ansible playbook
-        run: ansible-playbook recycle_app_pools.yml -e "servers=${{ github.event.inputs.servers }}"
+        run: ansible-playbook -i hosts.ini recycle_app_pools.yml -e "servers=${{ github.event.inputs.servers }} apppool=${{ github.event.inputs.apppool }}"
