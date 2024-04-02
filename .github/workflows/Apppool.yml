@@ -5,20 +5,23 @@ on:
       servers:
         type: choice
         required: true
-        description: Server Name
+        description: Server
         default: All
         options:
+          - AllPROD
+          - AllUAT
           - ServerUAT1
           - ServerUAT2
           - ServerPROD1
           - ServerPROD2
-          - All
+          
       apppool:
         type: choice
         required: true
-        description: Environment Name
+        description: Application Pools
         default: All
         options:
+          - All
           - AppPool1
           - AppPool2
 
